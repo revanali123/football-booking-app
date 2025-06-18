@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملاعبي - حجز ملاعب كرة القدم</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .status-bar {
+            background: #1a1a1a;
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .search-container {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 12px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .search-box i {
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .fields-list {
+            padding: 0 20px;
+        }
+
+        .field-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .field-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .field-image {
+            height: 200px;
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .field-image i {
+            font-size: 60px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .field-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .field-info {
+            padding: 15px;
+        }
+
+        .field-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .field-location {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .field-features {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #4CAF50;
+        }
+
+        .field-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+
+        .book-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .book-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.3s;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #4CAF50;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255,107,107,0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .floating-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stars {
+            color: #FFD700;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .field-card {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .team-challenge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            margin: 10px 20px;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .challenge-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .challenge-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>100% <i class="fas fa-battery-full"></i></span>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>⚽ ملاعبي</h1>
+            <p>احجز ملعبك المفضل بسهولة</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" placeholder="ابحث عن ملعب...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active">الكل</button>
+                <button class="filter-btn">عشب طبيعي</button>
+                <button class="filter-btn">عشب صناعي</button>
+                <button class="filter-btn">مضاء</button>
+                <button class="filter-btn">متاح الآن</button>
+            </div>
+        </div>
+
+        <!-- Team Challenge Section -->
+        <div class="team-challenge">
+            <h3>🏆 تحدي الفرق</h3>
+            <p>فريقك جاهز للمنافسة؟</p>
+            <button class="challenge-btn" onclick="showModal('challengeModal')">ابحث عن تحدي</button>
+            <button class="challenge-btn" onclick="showModal('teamModal')">أنشئ فريق</button>
+        </div>
+
+        <!-- Fields List -->
+        <div class="fields-list">
+            <div class="field-card">
+                <div class="field-image">
+                    <i class="fas fa-futbol"></i>
+                    <div class="field-badge">متاح</div>
+                </div>
+                <div class="field-info">
+                    <div class="field-name">ملعب الأولمبي</div>
+                    <div class="field-location">📍 الكرادة، بغداد</div>
+                    <div class="field-features">
+                        <div class="feature">
+                            <i class="fas fa-seedling"></i>
+                            <span>عشب صناعي</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>إنارة ليلية</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-car"></i>
+                            <span>موقف سيارات</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span>4.8 (124 تقييم)</span>
+                    </div>
+                    <div class="field-price">
+                        <div class="price">25,000 د.ع/ساعة</div>
+                        <button class="book-btn" onclick="showModal('bookingModal')">احجز الآن</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-card">
+                <div class="field-image">
+                    <i class="fas fa-futbol"></i>
+                    <div class="field-badge">مشغول</div>
+                </div>
+                <div class="field-info">
+                    <div class="field-name">ملعب النجوم</div>
+                    <div class="field-location">📍 الجادرية، بغداد</div>
+                    <div class="field-features">
+                        <div class="feature">
+                            <i class="fas fa-grass"></i>
+                            <span>عشب طبيعي</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-shower"></i>
+                            <span>غرف تبديل</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-coffee"></i>
+                            <span>كافتيريا</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐</span>
+                        <span>4.5 (89 تقييم)</span>
+                    </div>
+                    <div class="field-price">
+                        <div class="price">30,000 د.ع/ساعة</div>
+                        <button class="book-btn" style="background: #ccc; cursor: not-allowed;" disabled>غير متاح</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-card">
+                <div class="field-image">
+                    <i class="fas fa-futbol"></i>
+                    <div class="field-badge">متاح</div>
+                </div>
+                <div class="field-info">
+                    <div class="field-name">ملعب الشباب</div>
+                    <div class="field-location">📍 المنصور، بغداد</div>
+                    <div class="field-features">
+                        <div class="feature">
+                            <i class="fas fa-seedling"></i>
+                            <span>عشب صناعي</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>حارس أمن</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-water"></i>
+                            <span>مياه مجانية</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span>4.9 (156 تقييم)</span>
+                    </div>
+                    <div class="field-price">
+                        <div class="price">20,000 د.ع/ساعة</div>
+                        <button class="book-btn" onclick="showModal('bookingModal')">احجز الآن</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="floating-btn" onclick="showModal('serviceModal')" title="خدمات إضافية">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>الخريطة</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-calendar"></i>
+                <span>حجوزاتي</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>فريقي</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>الملف الشخصي</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideModal('bookingModal')">&times;</button>
+            <h3>🎯 حجز الملعب</h3>
+            <p>ملعب الأولمبي - الكرادة</p>
+            <div style="margin: 20px 0;">
+                <input type="date" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0;">
+                <select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0;">
+                    <option>اختر الوقت</option>
+                    <option>6:00 - 7:00 مساءً</option>
+                    <option>7:00 - 8:00 مساءً</option>
+                    <option>8:00 - 9:00 مساءً</option>
+                    <option>9:00 - 10:00 مساءً</option>
+                </select>
+            </div>
+            <div style="text-align: right; margin: 15px 0;">
+                <label><input type="checkbox"> حكم رسمي (+10,000 د.ع)</label><br>
+                <label><input type="checkbox"> معلق صوتي (+5,000 د.ع)</label><br>
+                <label><input type="checkbox"> مشروبات (+3,000 د.ع)</label><br>
+            </div>
+            <div style="font-size: 18px; font-weight: bold; color: #4CAF50; margin: 15px 0;">
+                الإجمالي: 25,000 د.ع
+            </div>
+            <button class="book-btn" style="width: 100%; padding: 15px;">تأكيد الحجز</button>
+        </div>
+    </div>
+
+    <!-- Team Modal -->
+    <div class="modal" id="teamModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideModal('teamModal')">&times;</button>
+            <h3>🏆 إنشاء فريق جديد</h3>
+            <div style="margin: 20px 0;">
+                <input type="text" placeholder="اسم الفريق" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0;">
+                <textarea placeholder="وصف الفريق" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0; height: 80px;"></textarea>
+                <select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0;">
+                    <option>مستوى الفريق</option>
+                    <option>مبتدئ</option>
+                    <option>متوسط</option>
+                    <option>متقدم</option>
+                    <option>احترافي</option>
+                </select>
+            </div>
+            <button class="book-btn" style="width: 100%; padding: 15px;">إنشاء الفريق</button>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div class="modal" id="challengeModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideModal('challengeModal')">&times;</button>
+            <h3>⚔️ تحدي الفرق</h3>
+            <p>الفرق المتاحة للتحدي:</p>
+            <div style="margin: 20px 0; text-align: right;">
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                    <strong>🔥 نجوم بغداد</strong><br>
+                    <small>مستوى: متقدم | التقييم: ⭐⭐⭐⭐</small><br>
+                    <button class="challenge-btn" style="margin-top: 10px;">أرسل تحدي</button>
+                </div>
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                    <strong>⚡ صقور الرافدين</strong><br>
+                    <small>مستوى: متوسط | التقييم: ⭐⭐⭐⭐⭐</small><br>
+                    <button class="challenge-btn" style="margin-top: 10px;">أرسل تحدي</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Modal -->
+    <div class="modal" id="serviceModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideModal('serviceModal')">&times;</button>
+            <h3>🛍️ خدمات إضافية</h3>
+            <div style="margin: 20px 0; text-align: right;">
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                    <strong>🥤 مشروبات وأطعمة</strong><br>
+                    <small>ماء، مشروبات طاقة، وجبات خفيفة</small><br>
+                    <button class="challenge-btn" style="margin-top: 10px;">اطلب الآن</button>
+                </div>
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                    <strong>⚽ معدات رياضية</strong><br>
+                    <small>كرات، أحذية، ملابس رياضية</small><br>
+                    <button class="challenge-btn" style="margin-top: 10px;">تسوق</button>
+                </div>
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
+                    <strong>🏆 بطولات وجوائز</strong><br>
+                    <small>سجل في البطولة الشهرية</small><br>
+                    <button class="challenge-btn" style="margin-top: 10px;">اشترك</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Navigation items interaction
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Filter buttons interaction
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(filter => filter.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Add some interactive animations
+        document.querySelectorAll('.field-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            const badges = document.querySelectorAll('.field-badge');
+            badges.forEach(badge => {
+                if (Math.random() > 0.7) {
+                    badge.textContent = badge.textContent === 'متاح' ? 'مشغول' : 'متاح';
+                    badge.style.background = badge.textContent === 'متاح' ? 
+                        'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)';
+                }
+            });
+        }, 10000);
+    </script>
+</body>
+</html>
